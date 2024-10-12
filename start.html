@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta Peripherals</title>
+    <style>
+    body {
+        font-family: 'Roboto', sans-serif; /* Use a modern sans-serif font */
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Prevent default body scroll */
+        scroll-behavior: smooth; /* Enable smooth scrolling */
+        background: linear-gradient(135deg, #141E30, #243B55); /* Futuristic gradient background */
+        color: #ecf0f1; /* Light text color for contrast */
+    }
+    
+    #background {
+        position: fixed; /* Fixed positioning for full coverage */
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: -1; /* Behind other content */
+        opacity: 0.3; /* Slightly transparent for depth */
+    }
+    
+    header {
+        background: rgba(0, 0, 0, 0.8); /* Dark header with slight transparency */
+        backdrop-filter: blur(10px); /* Blurred background for depth */
+        color: #ecf0f1;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative; /* Ensure it stays above the background */
+        z-index: 1; /* Bring it above background */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+        border-radius: 10px; /* Rounded corners */
+    }
+    
+    nav {
+        display: flex;
+        background-color: rgba(44, 62, 80, 0.9); /* Slight transparency */
+        position: relative; /* Ensure it stays above the background */
+        z-index: 1; /* Bring it above background */
+        border-radius: 10px; /* Rounded corners */
+        margin: 0.5rem;
+    }
+    
+    nav button {
+        flex: 1;
+        padding: 1rem;
+        background: none;
+        border: none;
+        color: #ecf0f1;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        border-radius: 5px; /* Rounded corners */
+    }
+    
+    nav button:hover {
+        background-color: rgba(255, 255, 255, 0.2); /* Hover effect */
+    }
+    
+    .container {
+        padding: 2rem;
+        max-height: calc(80vh - 80px); /* Adjust to account for header and nav */
+        overflow-y: auto; /* Vertical scrolling for the container */
+        overflow-x: hidden; /* Prevent horizontal scrolling for the entire container */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+        backdrop-filter: blur(5px); /* Blurred background for depth */
+    }
+    
+    .section {
+        display: none;
+    }
+    
+    .active {
+        display: block;
+    }
+    
+    /* Attendance Section Styles */
+    .attendance-controls {
+        margin-bottom: 1rem;
+    }
+    
+    .attendance-controls select {
+        padding: 0.5rem;
+        margin-right: 1rem;
+        border-radius: 5px; /* Rounded corners */
+        background-color: rgba(255, 255, 255, 0.2); /* Background for input */
+        color: #ecf0f1; /* Light text color */
+        border: none; /* Remove border */
+    }
+    
+    .attendance-table-container {
+        overflow-x: auto; /* Enable horizontal scrolling */
+        max-height: 400px; /* Limit the height for vertical scrolling */
+    }
+    
+    table.attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 10px; /* Rounded corners */
+        overflow: hidden; /* Prevent overflow for rounded corners */
+    }
+    
+    table.attendance-table th,
+    table.attendance-table td {
+        border: 1px solid #bdc3c7;
+        padding: 0.5rem;
+        text-align: center;
+        min-width: 40px;
+        transition: background-color 0.3s ease; /* Smooth transition for hover */
+    }
+    
+    table.attendance-table th {
+        background-color: #34495e; /* Dark background for headers */
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for headers */
+    }
+    
+    table.attendance-table td.present {
+        background-color: #2ecc71;
+        color: white;
+        cursor: pointer;
+    }
+    
+    table.attendance-table td.absent {
+        background-color: #e74c3c;
+        color: white;
+        cursor: pointer;
+    }
+    
+    table.attendance-table td.empty {
+        background-color: rgba(236, 240, 241, 0.2); /* Slightly transparent */
+        cursor: pointer;
+    }
+    
+    /* Expense Section Styles */
+    form label {
+        display: block;
+        margin-top: 0.5rem;
+        color: #ecf0f1; /* Light text color */
+    }
+    
+    form input,
+    form select,
+    form button {
+        width: 100%;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        box-sizing: border-box;
+        border-radius: 5px; /* Rounded corners */
+        border: none; /* Remove border */
+        background-color: rgba(255, 255, 255, 0.2); /* Background for input */
+        color: #ecf0f1; /* Light text color */
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    
+    table,
+    th,
+    td {
+        border: 1px solid #bdc3c7;
+    }
+    
+    th,
+    td {
+        padding: 0.75rem;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #34495e; /* Dark background for headers */
+    }
+    
+    /* Style for the Delete button */
+    .delete-button {
+        background-color: #e74c3c; /* Red background */
+        color: white; /* White text */
+        border: none; /* No border */
+        padding: 0.5rem 1rem; /* Padding */
+        cursor: pointer; /* Pointer cursor on hover */
+        border-radius: 4px; /* Rounded corners */
+        transition: background-color 0.3s ease; /* Smooth transition for hover */
+    }
+    
+    .delete-button:hover {
+        background-color: #c0392b; /* Darker red on hover */
+    }
+    
+    /* Button for saving PDF */
+    .save-pdf-button {
+        margin-top: 1rem; /* Space above the button */
+    background-color: #2980b9; /* Blue background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 1rem; /* Increased padding for a larger button */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 1rem; /* Font size */
+    transition: background-color 0.3s ease, transform 0.2s; /* Smooth transition */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    display: inline-block; /* Allow margin */
+    }
+    
+    .save-pdf-button:hover {
+        background-color: #1f6280; /* Darker blue on hover */
+        transform: scale(1.05);
+    }
+    
+    /* Save Attendance Button */
+    #saveAttendanceBtn {
+        margin-top: 2rem; /* Add more space above the button */
+    background-color: #2980b9; /* Blue background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 1rem; /* Increased padding for a larger button */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 1rem; /* Font size */
+    transition: background-color 0.3s ease, transform 0.2s; /* Smooth transition */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    display: inline-block; /* Allow margin */
+    }
+    
+    #saveAttendanceBtn:hover {
+        background-color: #1f6280; /* Darker blue on hover */
+        transform: scale(1.05);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        table.attendance-table th,
+        table.attendance-table td {
+            padding: 0.3rem;
+            font-size: 0.8rem;
+        }
+    
+        nav button {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div id="background"></div> <!-- Water wave background -->
+
+    <header>
+        <h1>Delta Peripherals</h1>
+    </header>
+
+    <nav>
+        <button onclick="showSection('attendance')">Attendance</button>
+        <button onclick="showSection('expenses')">Expenses</button>
+    </nav>
+
+    <div class="container">
+        <!-- Attendance Section -->
+        <div id="attendance" class="section active">
+            <h2>Employee Attendance</h2>
+            <div class="attendance-controls">
+                <label for="monthSelect">Select Month:</label>
+                <select id="monthSelect"></select>
+                <label for="yearSelect">Select Year:</label>
+                <select id="yearSelect"></select>
+            </div>
+            <div class="attendance-table-container">
+                <table class="attendance-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <!-- Day columns will be generated dynamically -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Employee rows will be generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <button class="save-pdf-button" id="saveAttendanceBtn">Save Attendance</button>
+        </div>
+
+        <!-- Expenses Section -->
+        <div id="expenses" class="section">
+            <h2>Track Expenses</h2>
+            <form id="expenseForm">
+                <label for="worksite">Work Site:</label>
+                <input type="text" id="worksite" name="worksite" required>
+
+                <label for="expenseDate">Date:</label>
+                <input type="date" id="expenseDate" name="expenseDate" required>
+
+                <label for="amount">Amount (₹):</label>
+                <input type="number" id="amount" name="amount" step="0.01" required>
+
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required>
+
+                <button type="submit">Add Expense</button>
+            </form>
+            <h3>Expense Records</h3>
+            <table id="expenseTable">
+                <thead>
+                    <tr>
+                        <th>Work Site</th>
+                        <th>Date</th>
+                        <th>Amount (₹)</th>
+                        <th>Description</th>
+                        <th>Action</th> <!-- New Column for Delete Action -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Expense records will appear here -->
+                </tbody>
+            </table>
+            <button class="save-pdf-button" id="savePdfBtn">Save as PDF</button> <!-- New Button for PDF -->
+        </div>
+    </div>
+
+    <script>
+        // Initialize the water wave background effect
+        VANTA.WAVES({
+            el: "#background",
+            color: 0x0077be, // Customize color as needed
+            shininess: 50,
+            waveHeight: 20,
+            waveSpeed: 1,
+            zoom: 1.2
+        });
+
+        // Show the selected section and populate data
+        let attendanceData = [];
+let expenseData = [];
+
+function showSection(sectionId) {
+    // Save current section data before switching
+    if (sectionId === 'attendance') {
+        saveAttendanceData();
+    } else if (sectionId === 'expenses') {
+        saveExpenseData();
+    }
+
+    // Save attendance data before switching sections
+    if (document.querySelector('.section.active').id === 'attendance') {
+        saveAttendanceData();
+    }
+
+    // Show the selected section and populate data
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById(sectionId).classList.add('active');
+
+    if (sectionId === 'attendance') {
+        populateAttendanceTable();
+    }
+}
+
+function saveAttendanceData() {
+    // ... rest of your saveAttendanceData function
+    localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+}
+document.getElementById('saveAttendanceBtn').addEventListener('click', function() {
+    saveAttendanceData();
+});
+
+function saveExpenseData() {
+    // ... rest of your saveExpenseData function
+    localStorage.setItem('expenseData', JSON.stringify(expenseData));
+}
+
+function loadAttendanceData() {
+    const savedData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+    attendanceData = savedData;
+    // ... rest of your loadAttendanceData function
+}
+
+function loadExpenseData() {
+    const savedData = JSON.parse(localStorage.getItem('expenseData')) || [];
+    expenseData = savedData;
+    // ... rest of your loadExpenseData function
+}
+
+// Initialize data on page load
+window.onload = function() {
+    loadAttendanceData();
+    loadExpenseData();
+};
+
+
+
+        // Populate months and years for attendance
+        function populateAttendanceControls() {
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+
+            // Populate month dropdown
+            for (let month = 0; month < 12; month++) {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = new Date(0, month).toLocaleString('default', { month: 'long' });
+                monthSelect.appendChild(option);
+            }
+
+            // Populate year dropdown (last 5 years)
+            for (let year = currentYear+2; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+
+            // Load saved attendance data from localStorage
+            loadAttendanceData();
+        }
+
+        // Load attendance data from localStorage
+        function loadAttendanceData() {
+            const savedData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const selectedYear = document.getElementById('yearSelect').value;
+
+            if (savedData[selectedYear] && savedData[selectedYear][selectedMonth]) {
+                const attendanceTableBody = document.querySelector('#attendanceTable tbody');
+                attendanceTableBody.innerHTML = ''; // Clear previous data
+
+                savedData[selectedYear][selectedMonth].forEach(employeeData => {
+                    const row = document.createElement('tr');
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = employeeData.name;
+                    row.appendChild(nameCell);
+
+                    employeeData.attendance.forEach(dayStatus => {
+                        const cell = document.createElement('td');
+                        cell.classList.add(dayStatus === 'P' ? 'present' : dayStatus === 'A' ? 'absent' : 'empty');
+                        cell.textContent = dayStatus || ' ';
+                        cell.addEventListener('click', () => toggleAttendance(cell));
+                        row.appendChild(cell);
+                    });
+
+                    attendanceTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Populate attendance table
+        function populateAttendanceTable() {
+            const attendanceTableBody = document.querySelector('#attendanceTable tbody');
+            attendanceTableBody.innerHTML = ''; // Clear previous data
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const selectedYear = document.getElementById('yearSelect').value;
+            const daysInMonth = new Date(selectedYear, parseInt(selectedMonth) + 1, 0).getDate();
+            const employees =  ["Arvind", "Gulvesh", "Manish", "Manjeet", "Pradeep", "Rajendra", "Subhash"]; // Sample employee names
+
+            // Clear the table header
+            const attendanceTableHeader = document.querySelector('#attendanceTable thead tr');
+            attendanceTableHeader.innerHTML = '<th>Employee Name</th>'; // Reset headers
+            for (let day = 1; day <= daysInMonth; day++) {
+                const th = document.createElement('th');
+                th.textContent = day;
+                attendanceTableHeader.appendChild(th);
+            }
+
+            // Populate employee attendance rows
+            employees.forEach(employee => {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                nameCell.textContent = employee;
+                row.appendChild(nameCell);
+                
+                const attendance = Array(daysInMonth).fill(''); // Initialize empty attendance for the month
+                attendance.forEach((_, day) => {
+                    const cell = document.createElement('td');
+                    cell.classList.add('empty'); // Default class
+                    cell.textContent = ' ';
+                    cell.addEventListener('click', () => toggleAttendance(cell));
+                    row.appendChild(cell);
+                });
+
+                attendanceTableBody.appendChild(row);
+            });
+        }
+
+        // Toggle attendance state
+        function toggleAttendance(cell) {
+            if (cell.classList.contains('empty')) {
+                cell.classList.remove('empty');
+                cell.classList.add('present');
+                cell.textContent = 'P';
+            } else if (cell.classList.contains('present')) {
+                cell.classList.remove('present');
+                cell.classList.add('absent');
+                cell.textContent = 'A';
+            } else {
+                cell.classList.remove('absent');
+                cell.classList.add('empty');
+                cell.textContent = ' ';
+            }
+
+            // Save the updated attendance data
+            saveAttendanceData();
+        }
+
+        // Save attendance data to localStorage
+        function saveAttendanceData() {
+            const savedData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const selectedYear = document.getElementById('yearSelect').value;
+            const attendanceTableBody = document.querySelector('#attendanceTable tbody');
+
+            // Initialize year and month in savedData if not present
+            if (!savedData[selectedYear]) {
+                savedData[selectedYear] = {};
+            }
+            if (!savedData[selectedYear][selectedMonth]) {
+                savedData[selectedYear][selectedMonth] = [];
+            }
+
+            // Clear the previous attendance for the selected month
+            savedData[selectedYear][selectedMonth] = [];
+
+            const rows = attendanceTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const employeeData = {
+                    name: row.firstChild.textContent,
+                    attendance: []
+                };
+                const cells = row.querySelectorAll('td');
+                cells.forEach((cell, index) => {
+                    if (index > 0) { // Skip the name cell
+                        employeeData.attendance.push(cell.classList.contains('present') ? 'P' : cell.classList.contains('absent') ? 'A' : '');
+                    }
+                });
+                savedData[selectedYear][selectedMonth].push(employeeData);
+            });
+
+            // Save to localStorage
+            localStorage.setItem('attendanceData', JSON.stringify(savedData));
+        }
+
+        // Handle adding expense
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const worksite = document.getElementById('worksite').value;
+            const expenseDate = document.getElementById('expenseDate').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const description = document.getElementById('description').value;
+
+            const expenseTableBody = document.querySelector('#expenseTable tbody');
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${worksite}</td>
+                <td>${new Date(expenseDate).toLocaleDateString()}</td>
+                <td>${amount.toFixed(2)}</td>
+                <td>${description}</td>
+                <td><button class="delete-button" onclick="deleteExpense(this)">Delete</button></td>
+            `;
+            expenseTableBody.appendChild(row);
+
+            // Reset form
+            this.reset();
+
+            // Save the updated expense data
+            saveExpenseData();
+        });
+
+        // Delete an expense row
+        function deleteExpense(button) {
+            const row = button.closest('tr');
+            row.remove();
+            saveExpenseData(); // Update the saved expenses
+        }
+
+        // Save expenses data to localStorage
+        function saveExpenseData() {
+            const expenseTableBody = document.querySelector('#expenseTable tbody');
+            const expenseData = [];
+
+            const rows = expenseTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                const colData = Array.from(cols).slice(0, 4).map(col => col.textContent); // Get first 4 columns
+                expenseData.push(colData);
+            });
+
+            // Save to localStorage
+            localStorage.setItem('expenseData', JSON.stringify(expenseData));
+        }
+
+        // Load expenses data from localStorage
+        function loadExpenseData() {
+            const savedData = JSON.parse(localStorage.getItem('expenseData')) || [];
+            const expenseTableBody = document.querySelector('#expenseTable tbody');
+            expenseTableBody.innerHTML = ''; // Clear previous data
+
+            savedData.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${expense[0]}</td>
+                    <td>${expense[1]}</td>
+                    <td>${expense[2]}</td>
+                    <td>${expense[3]}</td>
+                    <td><button class="delete-button" onclick="deleteExpense(this)">Delete</button></td>
+                `;
+                expenseTableBody.appendChild(row);
+            });
+        }
+
+        // Save attendance and expenses as PDF
+        document.getElementById('savePdfBtn').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(22);
+            doc.text('Delta Peripherals Report', 14, 20);
+            doc.setFontSize(16);
+            doc.text('Attendance Data', 14, 30);
+
+            // Attendance data
+            const attendanceTable = document.getElementById('attendanceTable');
+            const attendanceRows = attendanceTable.querySelectorAll('tr');
+
+            // Create an array for attendance data
+            const attendanceData = [];
+            attendanceRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(cell => cell.textContent);
+                attendanceData.push(rowData);
+            });
+
+            // Add attendance table to PDF
+            doc.autoTable({
+                head: [attendanceData[0]], // Header
+                body: attendanceData.slice(1), // Body (omit header)
+                startY: 35, // Start position
+                theme: 'grid'
+            });
+
+            // Move to next page for expenses
+            doc.addPage();
+            doc.text('Expense Data', 14, 20);
+
+            // Expense data
+            const expenseTable = document.getElementById('expenseTable');
+            const expenseRows = expenseTable.querySelectorAll('tr');
+
+            // Create an array for expense data
+            const expenseData = [];
+            expenseRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(cell => cell.textContent);
+                expenseData.push(rowData);
+            });
+
+            // Add expense table to PDF
+            doc.autoTable({
+                head: [expenseData[0]], // Header
+                body: expenseData.slice(1), // Body (omit header)
+                startY: 35, // Start position
+                theme: 'grid'
+            });
+
+            // Save the PDF
+            doc.save('delta_peripherals_report.pdf');
+        });
+
+        // Initialize
+        window.onload = function() {
+            populateAttendanceControls();
+            loadExpenseData(); // Load expenses on page load
+        };
+
+        // Change event listeners for dropdowns
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            populateAttendanceTable();
+            loadAttendanceData(); // Load attendance data for selected month
+        });
+
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            populateAttendanceTable();
+            loadAttendanceData(); // Load attendance data for selected year
+        });
+        window.addEventListener('beforeunload', function() {
+    if (document.querySelector('.section.active').id === 'attendance') {
+        saveAttendanceData();
+    }
+});
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
